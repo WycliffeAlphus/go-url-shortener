@@ -10,7 +10,7 @@ func main() {
 		fmt.Println("Welcome to URL shortener!!")
 	})
 
-	fmt.Println("Server started at :8080 ")
+	fmt.Println("Server started at:http://localhost:8080")
 
 	http.ListenAndServe(":8080", nil)
 }
