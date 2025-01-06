@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	// http.HandleFunc("/", )
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Welcome to URL shortener!!")
+	})
 
 	fmt.Println("Server started at :8080 ")
 
