@@ -7,8 +7,9 @@ import (
 )
 
 // InitRoutes initializes the routes for the application
-func InitRoutes() {
+func InitRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/shorten", handlers.HandleShorten)
 	mux.HandleFunc("/redirect", handlers.HandleRedirect)
+	return mux
 }
