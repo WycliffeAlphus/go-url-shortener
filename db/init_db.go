@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // InitDB initializes the SQLite database by executing the schema.sql script.
