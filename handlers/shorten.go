@@ -1,25 +1,42 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
-
-	"urlShortener/short"
+	"database/sql"
 )
 
-var urlStore = make(map[string]string)
+type URLStore struct {
+	LongURL, ShortURL string
+	Clicks            int
+}
 
-func HandleShorten(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
+type ShortenerDataModel struct {
+	DB *sql.DB
+}
+
+// Latest returns the latest URLs
+func (m *ShortenerDataModel) Latest() ([]*URLStore, error) {
+	stmt := `SELECT original_url, shortened_url, clicks FROM urls1`
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
 	}
 
-	longURL := r.FormValue("url")
+	defer rows.Close()
 
-	shortURL := short.ShortCode()
+	urls := []*URLStore{}
 
-	urlStore[shortURL] = longURL
+	for rows.Next() {
+		url := &URLStore{}
 
-	fmt.Fprintf(w, "http://localhost:8080/%s\n", shortURL)
+		if err := rows.Scan(&url.LongURL, &url.ShortURL, &url.Clicks); err != nil {
+			return nil, err
+		}
+		urls = append(urls, url)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return urls, nil
 }
