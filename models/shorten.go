@@ -5,8 +5,9 @@ import (
 )
 
 type URLStore struct {
-	LongURL, ShortURL string
-	Clicks            int
+	LongURL  string
+	ShortURL string
+	Clicks   int
 }
 
 type ShortenerDataModel struct {
