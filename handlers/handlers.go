@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"text/template"
 
@@ -91,18 +92,24 @@ func (app *App) HandleShorten() http.HandlerFunc {
 	}
 }
 
-
-
-
-func HandleRedirect(w http.ResponseWriter, r *http.Request) {
+func (app *App) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	shortURL := r.URL.Path[1:]
+	if shortURL == "" {
+		http.NotFound(w, r)
+		return
+	}
+	url, err := app.urls.GetByShortURL(shortURL)
 
-	longURL, ok := urlStore[shortURL]
-
-	if !ok {
+	if err != nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	http.Redirect(w, r, longURL, http.StatusFound)
+	err = app.urls.IncrementClicks(shortURL)
+
+	if err != nil {
+		log.Printf("Error imcrementing clicks: %v", err)
+	}
+
+	http.Redirect(w, r, url.LongURL, http.StatusFound)
 }
