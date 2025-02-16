@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"text/template"
 
@@ -32,17 +31,8 @@ func (app *App) HandleHome() http.HandlerFunc {
 			http.NotFound(w, r)
 			return
 		}
-
-		urls, err := app.urls.Latest()
-
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
 		data := PageData{
 			BaseURL: "http://" + r.Host,
-			URLData: urls,
 		}
 		tmpl, err := template.ParseFiles("templates/home.html")
 		if err != nil {
@@ -55,8 +45,10 @@ func (app *App) HandleHome() http.HandlerFunc {
 
 func (app *App) HandleShorten() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json") // Ensure response is always JSON
+
 		if r.Method != http.MethodPost {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, `{"error":"Method not allowed"}`, http.StatusMethodNotAllowed)
 			return
 		}
 
@@ -65,21 +57,20 @@ func (app *App) HandleShorten() http.HandlerFunc {
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			http.Error(w, `{"error":"Invalid JSON"}`, http.StatusBadRequest)
 			return
 		}
 
 		if input.URL == "" {
-			http.Error(w, "URL is required", http.StatusBadRequest)
+			http.Error(w, `{"error":"URL is required"}`, http.StatusBadRequest)
 			return
 		}
 
 		shortCode := short.ShortCode()
-
-		_, err := app.urls.Insert(input.URL, shortCode, 0)
+		err := app.urls.Insert(input.URL, shortCode)
 
 		if err != nil {
-			http.Error(w, "Error creating short url", http.StatusInternalServerError)
+			http.Error(w, `{"error":"Error creating short url"}`, http.StatusInternalServerError)
 			return
 		}
 
@@ -87,7 +78,7 @@ func (app *App) HandleShorten() http.HandlerFunc {
 			"original_url": input.URL,
 			"short_url":    "http://" + r.Host + "/" + shortCode,
 		}
-		w.Header().Set("Content-Type", "application/json")
+
 		json.NewEncoder(w).Encode(response)
 	}
 }
@@ -103,12 +94,6 @@ func (app *App) HandleRedirect(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.NotFound(w, r)
 		return
-	}
-
-	err = app.urls.IncrementClicks(shortURL)
-
-	if err != nil {
-		log.Printf("Error imcrementing clicks: %v", err)
 	}
 
 	http.Redirect(w, r, url.LongURL, http.StatusFound)
