@@ -5,9 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Shortener</title>
-    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
 </head>
-
 <body>
 <h1>URL Shortener</h1>
 <div class="url-form">
@@ -18,17 +17,7 @@
     </form>
     <div id="result"></div>
 </div>
-<div class = "url-list">
-    <h2>Recent URLs</h2>
-    {{range .URLData}}
-    <div class="url-item">
-        <p>Short URL: <a href="{{$.BaseURL}}/{{.ShortURL}}">{{$.BaseURL}}/{{.ShortURL}}</a></p>
-        <p>Original URL: {{.LongURL}}</p>
-        <p>Clicks: {{.Clicks}}</p>
-    </div>
-    {{end}}
-</div>
-<script>static/scripts/home.js</script>
+<script src="/static/scripts/home.js"></script>
 </body>
 </html>
 
