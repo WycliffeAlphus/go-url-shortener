@@ -1,20 +1,33 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"urlShortener/db"
+	"urlShortener/handlers"
+	"urlShortener/middlewares"
+	"urlShortener/models"
 	"urlShortener/routes"
 )
 
 func main() {
-	router := routes.InitRoutes()
+
 	dbPath := "db/database.sqlite3"
 	sqlFile := "db/schema.sql"
 
-	db.InitDB(dbPath, sqlFile)
+	dBase, err := db.InitDB(dbPath, sqlFile)
 
-	fmt.Println("Server started at:http://localhost:8080")
-	http.ListenAndServe(":8080", router)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	urlModel := &models.ShortenerDataModel{DB: dBase}
+	app := handlers.NewApp(urlModel)
+	router := routes.InitRoutes(app)
+
+	handler := middlewares.Logger(router)
+
+	log.Println("Server started at:http://localhost:8080")
+	http.ListenAndServe(":8080", handler)
 }
