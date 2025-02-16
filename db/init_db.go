@@ -13,11 +13,8 @@ import (
 func InitDB(dbPath, sqlFile string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-
 		return nil, errors.New("Error opening database: " + err.Error())
 	}
-
-	defer db.Close()
 
 	sqlBytes, err := os.ReadFile(sqlFile)
 	if err != nil {
@@ -28,6 +25,12 @@ func InitDB(dbPath, sqlFile string) (*sql.DB, error) {
 	_, err = db.Exec(sqlStatements)
 	if err != nil {
 		return nil, errors.New("Error executing SQL: " + err.Error())
+	}
+
+	// ✅ Check if the database connection is alive
+	if err = db.Ping(); err != nil {
+		db.Close()
+		return nil, errors.New("Database connection test failed: " + err.Error())
 	}
 
 	fmt.Println("Database initialized successfully")
