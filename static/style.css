@@ -1,0 +1,19 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.url-form {
+    margin: 20px 0;
+}
+
+.url-list {
+    margin-top: 20px;
+}
+
+.url-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
