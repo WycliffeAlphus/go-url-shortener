@@ -68,7 +68,6 @@ func (app *App) HandleShorten() http.HandlerFunc {
 
 		shortCode := short.ShortCode()
 		err := app.urls.Insert(input.URL, shortCode)
-
 		if err != nil {
 			http.Error(w, `{"error":"Error creating short url"}`, http.StatusInternalServerError)
 			return
@@ -83,18 +82,19 @@ func (app *App) HandleShorten() http.HandlerFunc {
 	}
 }
 
-func (app *App) HandleRedirect(w http.ResponseWriter, r *http.Request) {
-	shortURL := r.URL.Path[1:]
-	if shortURL == "" {
-		http.NotFound(w, r)
-		return
-	}
-	url, err := app.urls.GetByShortURL(shortURL)
+func (app *App) HandleRedirect() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		shortURL := r.URL.Path[1:]
+		if shortURL == "" {
+			http.NotFound(w, r)
+			return
+		}
+		url, err := app.urls.GetByShortURL(shortURL)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
 
-	if err != nil {
-		http.NotFound(w, r)
-		return
+		http.Redirect(w, r, url.LongURL, http.StatusFound)
 	}
-
-	http.Redirect(w, r, url.LongURL, http.StatusFound)
 }
