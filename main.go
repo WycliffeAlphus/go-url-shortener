@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"urlShortener/db"
 	"urlShortener/handlers"
@@ -12,8 +14,19 @@ import (
 )
 
 func main() {
-	dbPath := "db/database.sqlite3"
-	sqlFile := "db/schema.sql"
+	// Set up database paths for both development and production
+	dbDir := "/app/database"
+	if os.Getenv("GO_ENV") != "production" {
+		dbDir = "db"
+	}
+
+	// Ensure database directory exists
+	if err := os.MkdirAll(dbDir, 0o755); err != nil {
+		log.Fatal("Failed to create database directory:", err)
+	}
+
+	dbPath := filepath.Join(dbDir, "database.sqlite3")
+	sqlFile := filepath.Join("db", "schema.sql")
 
 	dBase, err := db.InitDB(dbPath, sqlFile)
 	if err != nil {
@@ -29,6 +42,13 @@ func main() {
 
 	handler := middlewares.Logger(router)
 
-	log.Println("Server started at: http://localhost:8080")
-	http.ListenAndServe(":8080", handler)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Server started at port :%s", port)
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
+		log.Fatal(err)
+	}
 }
