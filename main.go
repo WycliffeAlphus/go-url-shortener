@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	dbPath := "/mnt/volume/db/database.sqlite3"
+	dbPath := "db/database.sqlite3"
 	sqlFile := "db/schema.sql"
 
 	dBase, err := db.InitDB(dbPath, sqlFile)
