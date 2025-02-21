@@ -1,15 +1,75 @@
+/* Import a modern, clean font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
+    font-family: 'Inter', sans-serif;
+    max-width: 600px;
+    margin: 40px auto;
     padding: 20px;
+    background-color: #f9f9f9;
+    color: #333;
+    text-align: center;
 }
 
+/* Header Styling */
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Form Container */
 .url-form {
-    margin: 20px 0;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
+/* Form Inputs */
+#shortenForm input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Button Styling */
+#shortenForm button {
+    padding: 10px 15px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#shortenForm button:hover {
+    background-color: #0056b3;
+}
+
+/* URL Items */
 .url-item {
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
+    background: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #shortenForm input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    #shortenForm button {
+        width: 100%;
+    }
 }
